@@ -32,7 +32,12 @@ int main(void)
 {
     WDTCTL = WDTPW | WDTHOLD;               // Stop watchdog timer
     
-    
+    P6DIR |= BIT0 | BIT1 | BIT2 | BIT3;     //set columns as outputs
+    P6OUT |= BIT0 | BIT1 | BIT2 | BIT3;     //initially set all high
+
+    P1DIR &= ~(BIT4 | BIT5 | BIT6 | BIT7);
+    P1REN |= BIT4 | BIT5 | BIT6 | BIT7;
+    P1OUT |= BIT4 | BIT5 | BIT6 | BIT7;
 
     P1OUT &= ~BIT0;                         // Clear P1.0 output
     P1DIR |= BIT0;                          // Set P1.0 to output direction
@@ -40,8 +45,7 @@ int main(void)
     PM5CTL0 &= ~LOCKLPM5;                   // Disable the GPIO power-on default high-impedance mode
                                             
 
-    while(1)
-    {
+    while(1){
         P1OUT ^= BIT0;                      // Toggle P1.0 using exclusive-OR
         __delay_cycles(100000);             // Delay for 100000*(1/MCLK)=0.1s
     }
