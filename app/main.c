@@ -1,7 +1,6 @@
 #include <msp430.h>
 #include "heartbeat.h"
 
-volatile unsigned int overflow_count = 0;   // Overflow counter
 
 int main(void)
 {
@@ -14,12 +13,14 @@ int main(void)
     PM5CTL0 &= ~LOCKLPM5;                   // Disable GPIO high-impedance mode
 
 
-    // Setup Timer B0 (for heartbeat)
+    // Setup Timer B0 (for heartbeat 1s)
     TB0CTL |= TBCLR;                        // Clear timer
     TB0CTL |= TBSSEL__SMCLK;                // Select SMCLK (1 MHz)
     TB0CTL |= MC__CONTINUOUS;               // Set mode to continuous
-    TB0CTL |= ID_3;                         // Divide clock by 8 (1MHz / 8 = 125kHz)
-    TB0CCR0 = 125000;                       // Set overflow to 1 second (125000 / 125kHz = 1s)
+    TB0CTL |= CNTL__16;                     // Use 16-bit counter(default)
+    TB0CTL |= ID__8;                        // Divide clock by 8 (1MHz / 8 = 125kHz)
+    TB0EX0 = TBIDEX__2;                     // Divide by 2(125 kHz /2 = 62.5 kHz)
+
 
     TB0CTL |= TBIE;                         // Enable Timer Overflow Interrupt
 
