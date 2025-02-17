@@ -26,19 +26,35 @@ char keymap[4][4] = {
 char scan_keypad(void){
     int row, col;
 
-    for(row = 0; row < 4; row++){
+    // Loop through all the columns
+    for(col = 0; col < 4; col++) {
+        // Set all columns low
+        P6OUT &= ~(BIT0 | BIT1 | BIT2 | BIT3);  // Set all columns low
+        
+        // Set the current column to HIGH
+        P6OUT |= (BIT0 << col);  // Set the current column high
 
+        // Check each row to see if any row is low (indicating a key press)
+        for(row = 0; row < 4; row++) {
+            if((P1IN & (BIT4 << row)) == 0) {  // If the row is pulled low
+                // Wait for key release to avoid multiple detections
+                while((P1IN & (BIT4 << row)) == 0);
+                return keymap[row][col];  // Return the key from the keymap
+            }
+        }
     }
+
+    return 0; // No key pressed
 
 }
 
 int main(void)
 {
     WDTCTL = WDTPW | WDTHOLD;               // Stop watchdog timer
-    
+    //Columns
     P6DIR |= BIT0 | BIT1 | BIT2 | BIT3;     //set columns as outputs
-    P6OUT |= BIT0 | BIT1 | BIT2 | BIT3;     //initially set all high
-
+    P6OUT &= ~(BIT0 | BIT1 | BIT2 | BIT3);     //initially set all low
+    //Rows
     P1DIR &= ~(BIT4 | BIT5 | BIT6 | BIT7);
     P1REN |= BIT4 | BIT5 | BIT6 | BIT7;
     P1OUT |= BIT4 | BIT5 | BIT6 | BIT7;
