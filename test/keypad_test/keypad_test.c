@@ -26,6 +26,10 @@ char keymap[4][4] = {
 char scan_keypad(void){
     int row, col;
 
+    for(row = 0; row < 4; row++){
+
+    }
+
 }
 
 int main(void)
@@ -43,10 +47,14 @@ int main(void)
     P1DIR |= BIT0;                          // Set P1.0 to output direction
 
     PM5CTL0 &= ~LOCKLPM5;                   // Disable the GPIO power-on default high-impedance mode
-                                            
+
+    char key;                                        
 
     while(1){
         P1OUT ^= BIT0;                      // Toggle P1.0 using exclusive-OR
-        __delay_cycles(100000);             // Delay for 100000*(1/MCLK)=0.1s
+        __delay_cycles(100000); 
+                   // Delay for 100000*(1/MCLK)=0.1s
+        key = scan_keypad();
     }
+
 }
