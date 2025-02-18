@@ -4,7 +4,7 @@
 #include "rgb_control.h"
 
 volatile unsigned int overflow_count = 0;   // Overflow counter
-
+volatile int heartcnt=0;                    //heartbeat counter
 int main(void)
 {
 
@@ -64,8 +64,8 @@ int main(void)
     TB0CTL |= TBCLR;                        // Clear timer
     TB0CTL |= TBSSEL__SMCLK;                // Select SMCLK (1 MHz)
     TB0CTL |= MC__CONTINUOUS;               // Set mode to continuous
-    TB0CTL |= ID_3;                         // Divide clock by 8 (1MHz / 8 = 125kHz)
-    TB0CCR0 = 125000;                       // Set overflow to 1 second (125000 / 125kHz = 1s)
+    TB0CTL |= ID__4;                         // Divide clock by 8 (1MHz / 8 = 125kHz)
+    TB0CCR0 = 62500;                       // Set overflow to 0.25s
 
     TB0CTL |= TBIE;                         // Enable Timer Overflow Interrupt
 
@@ -84,15 +84,17 @@ int main(void)
 //------------------------------------------------------------------------------
 //----------------------Start Timer Overflow ISR--------------------------------
 //------------------------------------------------------------------------------
-// 1 Second Functionality for several uses
+// quarter second overflow timer
 //------------------------------------------------------------------------------
 #pragma vector = TIMER0_B1_VECTOR
 __interrupt void ISR_TB0_OVERFLOW(void)
 {
-
+if(heartcnt < 2){
         heartbeat_toggle();                  // Call heartbeat function to toggle LED
- 
-
+        heartcnt++;
+}else{
+    heartcnt=0;
+}
     TB0CTL &= ~TBIFG;                        // Clear interrupt flag
 }
 //------------------------------------------------------------------------------
