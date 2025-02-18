@@ -7,11 +7,18 @@
 
 
 volatile int heartcnt=0;                    //heartbeat counter
+volatile int stepnum=0;                     //Counter for specifying pattern step
 
 int main(void)
 {
 
     WDTCTL = WDTPW | WDTHOLD;               // Stop watchdog timer
+
+/*
+* Notes for later:
+* Need a pattern variable, current step variable, and trigger(overflow loop)
+
+*/
 //------------------------------------------------------------------------------
 //----------------------------Pin Initialization--------------------------------
 //------------------------------------------------------------------------------
@@ -79,7 +86,7 @@ int main(void)
 
     while (1) {
         rgb_control(4);
-
+        lightbar(1);
 
     }
 }
@@ -93,6 +100,8 @@ int main(void)
 #pragma vector = TIMER0_B1_VECTOR
 __interrupt void ISR_TB0_OVERFLOW(void)
 {
+
+//------------------Heartbeat Section-------------------------------------------
 if(heartcnt < 2){
         heartbeat_toggle();                  // Call heartbeat function to toggle LED
         heartcnt++;
@@ -100,6 +109,11 @@ if(heartcnt < 2){
     heartcnt=0;
 }
     TB0CTL &= ~TBIFG;                        // Clear interrupt flag
+//--------------End Heartbeat Section-------------------------------------------
+//------------------Start Lightbar counter--------------------------------------
+
+
+//-------------------End  Lightbar counter--------------------------------------
 }
 //------------------------------------------------------------------------------
 //------------------------End Timer Overflow ISR--------------------------------
