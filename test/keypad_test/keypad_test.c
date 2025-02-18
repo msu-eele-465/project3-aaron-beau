@@ -32,14 +32,14 @@ char scan_keypad(void){
         P6OUT &= ~(BIT0 | BIT1 | BIT2 | BIT3);  // Set all columns low
         
         // Set the current column to HIGH
-        P6OUT |= (BIT0 << col);  // Set the current column high
+        P6OUT |= (BIT0 << col);                             // Set the current column high
 
         // Check each row to see if any row is low (indicating a key press)
         for(row = 0; row < 4; row++) {
-            if((P1IN & (BIT4 << row)) == 0) {  // If the row is pulled low
+            if((P1IN & (BIT4 << row)) == 0) {               // If the row is pulled low
                 // Wait for key release to avoid multiple detections
                 while((P1IN & (BIT4 << row)) == 0);
-                return keymap[row][col];  // Return the key from the keymap
+                return keymap[row][col];                    // Return the key from the keymap
             }
         }
     }
