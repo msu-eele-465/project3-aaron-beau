@@ -4,7 +4,8 @@
 #include "rgb_control.h"
 
 
-volatile unsigned int overflow_count = 0;   // Overflow counter
+
+
 volatile int heartcnt=0;                    //heartbeat counter
 
 int main(void)
