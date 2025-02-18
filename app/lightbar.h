@@ -8,6 +8,6 @@
 #include <msp430.h>
 
 // Function prototype (now matches the implementation)
-void lightbar(int count);
+int lightbar(int count);
 
 #endif

@@ -8,7 +8,7 @@
 
 volatile int heartcnt=0;                    //heartbeat counter
 volatile int stepnum=0;                     //Counter for specifying pattern step
-
+volatile int barflag=0;                     //ISR flag for lightbar
 int main(void)
 {
 
@@ -86,8 +86,13 @@ int main(void)
 
     while (1) {
         rgb_control(4);
-        lightbar(1);
+        
 
+if(barflag==1){
+
+        stepnum=lightbar(stepnum);
+        barflag=0;
+}
     }
 }
 
@@ -111,7 +116,12 @@ if(heartcnt < 2){
     TB0CTL &= ~TBIFG;                        // Clear interrupt flag
 //--------------End Heartbeat Section-------------------------------------------
 //------------------Start Lightbar counter--------------------------------------
-
+if(stepnum <= 7){
+    barflag=1;
+}else{
+    barflag=0;
+    stepnum=0;
+}
 
 //-------------------End  Lightbar counter--------------------------------------
 }
