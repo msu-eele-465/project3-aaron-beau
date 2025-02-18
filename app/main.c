@@ -79,7 +79,7 @@ int main(void)
 
     while (1) {
         rgb_control(4);
-        __delay_cycles(10);
+
 
     }
 }
