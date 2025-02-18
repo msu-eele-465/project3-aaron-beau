@@ -7,8 +7,7 @@
 
 #include <msp430.h>
 
-// Function prototype
-void rgb_control(int color);        //1=red, 2=green, 3=blue
-
+// Function prototype (now matches the implementation)
+void rgb_control(int color);
 
 #endif

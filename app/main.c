@@ -74,12 +74,14 @@ int main(void)
     __enable_interrupt();                   //Global
 
     while (1) {
-        rgb_control(1);
-        __delay_cycles(100000);
-        rgb_control(2);
-        __delay_cycles(100000);
-        rgb_control(3);
-        __delay_cycles(100000);
+ //       rgb_control(1);
+//        __delay_cycles(100000);
+ //       rgb_control(2);
+//        __delay_cycles(100000);
+//        rgb_control(3);
+//        __delay_cycles(100000);
+        rgb_control(4);
+     //   __delay_cycles(1000000);
     }
 }
 
