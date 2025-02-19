@@ -2,6 +2,8 @@
 #include "heartbeat.h"
 #include "intrinsics.h"
 #include "rgb_control.h"
+#include <stdint.h>
+#include "lightbar.h"
 
 
 
@@ -9,7 +11,9 @@
 volatile int heartcnt=0;                    //heartbeat counter
 volatile int stepnum=0;                     //Counter for specifying pattern step
 volatile int barflag=0;                     //ISR flag for lightbar
-volatile int pattnum=3;                     //Specifier for the lightbar pattern
+volatile int pattnum=2;                     //Specifier for the lightbar pattern
+volatile uint8_t lightbar_byte=0;                 //8-bit counter for pattern 2
+
 int main(void)
 {
 
@@ -91,7 +95,7 @@ int main(void)
 
 if(barflag==1){
 
-        stepnum=lightbar(stepnum, pattnum);
+        stepnum=lightbar(stepnum, pattnum, lightbar_byte);
         barflag=0;
 }
     }
@@ -114,17 +118,25 @@ if(heartcnt < 2){
 }else{
     heartcnt=0;
 }
-    TB0CTL &= ~TBIFG;                        // Clear interrupt flag
 //--------------End Heartbeat Section-------------------------------------------
 //------------------Start Lightbar counter--------------------------------------
-if(stepnum <= 7){
+if(stepnum <= 7 && pattnum != 2){
     barflag=1;
 }else{
     barflag=0;
     stepnum=0;
 }
-
 //-------------------End  Lightbar counter--------------------------------------
+//-------------------Start binary counter --------------------------------------
+if(pattnum == 2){
+barflag=1;
+    if (lightbar_byte>255){
+        lightbar_byte=0;
+    }else{
+        lightbar_byte++;
+    }
+}
+    TB0CTL &= ~TBIFG;                        // Clear interrupt flag
 }
 //------------------------------------------------------------------------------
 //------------------------End Timer Overflow ISR--------------------------------
