@@ -9,6 +9,7 @@
 volatile int heartcnt=0;                    //heartbeat counter
 volatile int stepnum=0;                     //Counter for specifying pattern step
 volatile int barflag=0;                     //ISR flag for lightbar
+volatile int pattnum=2;                     //Specifier for the lightbar pattern
 int main(void)
 {
 
@@ -90,7 +91,7 @@ int main(void)
 
 if(barflag==1){
 
-        stepnum=lightbar(stepnum);
+        stepnum=lightbar(stepnum, pattnum);
         barflag=0;
 }
     }
