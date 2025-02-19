@@ -8,13 +8,13 @@ on the keypad is defined.
 
 Pin Out
 --------------
-Rows : P1.4-7
-Cols : P6.0-3
+Rows : P1.0, P1.7, P1.6, P1.5 
+Cols : P1.4, P1.3, P1.2, P1.1
 
 //This line was added to fix git pushing
 -------------------------------------------------------------------------------------*/
 #include <msp430.h>
-
+char key;
 // Keypad mapping
 char keymap[4][4] = {
     {'1', '2', '3', 'A'},
@@ -64,7 +64,7 @@ int main(void)
 
     PM5CTL0 &= ~LOCKLPM5;                   // Disable the GPIO power-on default high-impedance mode
 
-    char key;                                        
+                                            
 
     while(1){
         P1OUT ^= BIT0;                      // Toggle P1.0 using exclusive-OR
