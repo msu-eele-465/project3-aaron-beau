@@ -1,0 +1,43 @@
+stepnum= part of stem light bar is on in pattern
+lightbar_byte= counter for pattern 2
+
+
+main{
+
+while(1){
+
+if(toggle lightbar = set){
+
+	lightbar(stepnum, pattern, lightbar_byte)
+
+}
+
+}
+
+
+
+0.25s_overflow_timer(){
+
+every 2 overflows toggle heartbeat LED
+
+if ( stepnum greater than 7 or pattern is not 2 (upcounter)){
+
+toggle lightbar()
+
+}else{
+set function toggle and stepnum to 0;
+}
+
+if (pattern=2){
+toggle lightbar
+
+	if(lightbar_byte>255){
+	lightbar_byte=0
+
+	}else{
+	increment lightbar_byte by 1
+	
+
+	}
+}
+
