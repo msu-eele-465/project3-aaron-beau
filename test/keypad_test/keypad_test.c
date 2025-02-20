@@ -14,12 +14,7 @@ Cols : P1.4, P1.5, P1.6, P1.7
 //This line was added to fix git pushing
 -------------------------------------------------------------------------------------*/
 #include <msp430.h> 
-char key;                   //store individual keypad pressed
-int i;                      // loop variable
-char unlock_code[4];        // array to store keypad presses 
-char set_code[4] = {'6','9','6','9'};
-int locked = 1;
-int equal = 1;  
+ 
 // Keypad mapping
 char keymap[4][4] = {
     {'1', '2', '3', 'A'},
@@ -56,28 +51,13 @@ char scan_keypad(void){
 
 }
 
-int main(void)
-{
-    WDTCTL = WDTPW | WDTHOLD;               // Stop watchdog timer
-    //Columns
-    P1DIR |= BIT4 | BIT5 | BIT6 | BIT7;     //set columns as outputs
-    P1OUT &= ~(BIT4 | BIT5 | BIT6 | BIT7);     //initially set all low
-    //Rows
-    P1DIR &= ~(BIT0 | BIT1 | BIT2 | BIT3);
-    P1REN |= BIT0 | BIT1 | BIT2 | BIT3;
-    P1OUT &= ~(BIT0 | BIT1 | BIT2 | BIT3);
-
-    P6OUT &= ~BIT6;                         // Clear P1.0 output
-    P6DIR |= BIT6;                          // Set P1.0 to output direction
-
-    PM5CTL0 &= ~LOCKLPM5;                   // Disable the GPIO power-on default high-impedance mode
-
-                                            
-
-    while(1){
-        P6OUT ^= BIT6;                      // Toggle P1.0 using exclusive-OR
-        __delay_cycles(100000);             // delay to see flash
-                  
+char unlock_keypad(void){ 
+    int i = 0;
+    int equal = 1;
+    int locked = 1;
+    char key;                   
+    char unlock_code[4];        
+    char set_code[4] = {'6','9','6','9'};             
          // Collecting 4-digit unlock code
         i = 0;                                  // Reset index before input
         while (i < 4 && locked == 1) {
@@ -102,5 +82,30 @@ int main(void)
         } else {
             locked = 1;                         // Keep system locked
         }
+    }
+
+int main(void)
+{
+    WDTCTL = WDTPW | WDTHOLD;               // Stop watchdog timer
+    //Columns
+    P1DIR |= BIT4 | BIT5 | BIT6 | BIT7;     //set columns as outputs
+    P1OUT &= ~(BIT4 | BIT5 | BIT6 | BIT7);     //initially set all low
+    //Rows
+    P1DIR &= ~(BIT0 | BIT1 | BIT2 | BIT3);
+    P1REN |= BIT0 | BIT1 | BIT2 | BIT3;
+    P1OUT &= ~(BIT0 | BIT1 | BIT2 | BIT3);
+
+    P6OUT &= ~BIT6;                         // Clear P1.0 output
+    P6DIR |= BIT6;                          // Set P1.0 to output direction
+
+    PM5CTL0 &= ~LOCKLPM5;                   // Disable the GPIO power-on default high-impedance mode
+
+                                            
+
+    while(1){
+        P6OUT ^= BIT6;                      // Toggle P1.0 using exclusive-OR
+        __delay_cycles(100000);             // delay to see flash
+
+        unlock_keypad();
     }
 }
