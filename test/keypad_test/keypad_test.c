@@ -100,7 +100,7 @@ int main(void)
         if (equal == 1) {
             locked = 0;                         // Unlock system
         } else {
-            locked = 1;                         // Keep locked
+            locked = 1;                         // Keep system locked
         }
     }
 }
