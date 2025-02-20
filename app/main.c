@@ -7,23 +7,27 @@
 
 
 
-
+//-------------------Variable Initialization -----------------------------------
+/*Many of the variable are for counting, see description for each job*/
+//------------------------------------------------------------------------------
 volatile int heartcnt=0;                    //heartbeat counter
 volatile int stepnum=0;                     //Counter for specifying pattern step
-volatile int barflag=0;                     //ISR flag for lightbar
+volatile int barflag=0;                     //ISR flag/trigger for lightbar
 volatile int pattnum=2;                     //Specifier for the lightbar pattern
-volatile uint8_t lightbar_byte=0;                 //8-bit counter for pattern 2
+                                            //(Keypad Modifiable)
+volatile uint8_t lightbar_byte=0;           //8-bit counter for pattern 2
+
+int time_cntl=2;                            //Multiplier for base-transition 
+                                            //control (default 1s)  
+                                            //(Keypad Modifiable)
+
+int barcounter=0;                           //Step counter for ISR, compared to 
+                                            //time_cntl for base-transition
 
 int main(void)
 {
 
     WDTCTL = WDTPW | WDTHOLD;               // Stop watchdog timer
-
-/*
-* Notes for later:
-* Need a pattern variable, current step variable, and trigger(overflow loop)
-
-*/
 //------------------------------------------------------------------------------
 //----------------------------Pin Initialization--------------------------------
 //------------------------------------------------------------------------------
@@ -32,7 +36,7 @@ int main(void)
     P6DIR |= BIT6;                          // Configure LED on P6.6
     P6OUT &= ~BIT6;
 
-//------rgb LED
+//------RGB LED
     P4DIR |= BIT0;                          // Configure red part
     P4OUT &= ~BIT0;
 
@@ -75,26 +79,26 @@ int main(void)
     PM5CTL0 &= ~LOCKLPM5;                   // Disable GPIO high-impedance mode
 
 
-    // Setup Timer B0 (for heartbeat 1s)
+//------Setup 0.25s Timer B0 (for heartbeat 1s)
     TB0CTL |= TBCLR;                        // Clear timer
     TB0CTL |= TBSSEL__SMCLK;                // Select SMCLK (1 MHz)
     TB0CTL |= MC__CONTINUOUS;               // Set mode to continuous
-    TB0CTL |= ID__4;                         // Divide clock by 8 (1MHz / 8 = 125kHz)
-    TB0CCR0 = 62500;                       // Set overflow to 0.25s
+    TB0CTL |= ID__4;                        
+    TB0CCR0 = 62500;                        // Set overflow to 0.25s
 
 
     TB0CTL |= TBIE;                         // Enable Timer Overflow Interrupt
 
     TB0CTL &= ~TBIFG;
 
-    __enable_interrupt();                   //Global
+    __enable_interrupt();                   // Global
 
     while (1) {
-        rgb_control(4);
+        rgb_control(4);                     // For Testing
         
 
-if(barflag==1){
-
+if(barflag==1){                             // If flag set call lightbar 
+                                            // Testing
         stepnum=lightbar(stepnum, pattnum, lightbar_byte);
         barflag=0;
 }
@@ -105,38 +109,55 @@ if(barflag==1){
 //------------------------------------------------------------------------------
 //----------------------Start Timer Overflow ISR--------------------------------
 //------------------------------------------------------------------------------
-// quarter second overflow timer
+/*This ISR implements a basic 0.25s overflow loop for toggling heartbeat 
+* LED and the various LED bar patterns which can be scaled depending on
+* inputs from the keypad*/
 //------------------------------------------------------------------------------
 #pragma vector = TIMER0_B1_VECTOR
 __interrupt void ISR_TB0_OVERFLOW(void)
 {
 
 //------------------Heartbeat Section-------------------------------------------
-if(heartcnt < 2){
-        heartbeat_toggle();                  // Call heartbeat function to toggle LED
-        heartcnt++;
+if(heartcnt < 3){                        // Frequency timer for heartbeat (1s)
+    heartcnt++;
 }else{
+    heartbeat_toggle();                  // Call heartbeat function to toggle LED
     heartcnt=0;
 }
 //--------------End Heartbeat Section-------------------------------------------
-//------------------Start Lightbar counter--------------------------------------
-if(stepnum <= 7 && pattnum != 2){
+//------------------Start Lightbar flag call------------------------------------
+/*Code counts every time ISR is called and sets flag to toggle lightbar() every 
+* time_cntl times(base 1s) The else loop in this section contains every case for
+* the LED bar patterns which is triggered when barcounter is greater than 
+* time_cntl*/
+//------------------------------------------------------------------------------
+
+if(barcounter<=(time_cntl)){            // Loop to control interation frequency
+    barcounter++;                       // (time_cntl varies)
+}else{                                  // Once counter reaches time limit start 
+if(stepnum <= 7 && pattnum != 2){       // Checking for proper pattern
     barflag=1;
 }else{
-    barflag=0;
-    stepnum=0;
-}
-//-------------------End  Lightbar counter--------------------------------------
-//-------------------Start binary counter --------------------------------------
-if(pattnum == 2){
-barflag=1;
-    if (lightbar_byte>255){
-        lightbar_byte=0;
-    }else{
-        lightbar_byte++;
+        barflag=0;
+        stepnum=0;
     }
-}
-    TB0CTL &= ~TBIFG;                        // Clear interrupt flag
+//-------------------End  Lightbar flag call------------------------------------
+//-------------------Start binary counter --------------------------------------
+/*Section is still nestled in else loop ^^^ this logic is separate in order to
+* properly call and pass in byte of data to lightbar()*/
+//------------------------------------------------------------------------------
+    if(pattnum == 2){                   // Individual logic to check for 
+    barflag=1;                          // binary counter
+        if (lightbar_byte>255){         // When all bits toggled reset to zeroes
+            lightbar_byte=0;
+        }else{                          //Else increment byte by 1
+            lightbar_byte++;
+        }
+    }
+    barcounter=0;
+
+}                                       // End of big else loop
+    TB0CTL &= ~TBIFG;                   // Clear interrupt flag
 }
 //------------------------------------------------------------------------------
 //------------------------End Timer Overflow ISR--------------------------------
