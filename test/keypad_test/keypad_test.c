@@ -8,8 +8,8 @@ on the keypad is defined.
 
 Pin Out
 --------------
-Rows : P1.0, P1.7, P1.6, P1.5 
-Cols : P1.4, P1.3, P1.2, P1.1
+Rows : P1.0, P1.1, P1.2, P1.3 
+Cols : P1.4, P1.5, P1.6, P1.7
 
 //This line was added to fix git pushing
 -------------------------------------------------------------------------------------*/
@@ -25,20 +25,23 @@ char keymap[4][4] = {
 
 char scan_keypad(void){
     unsigned int row, col;
+    const char row_pin[4] = {BIT0, BIT1, BIT2, BIT3};
+    const char col_pin[4] = {BIT4, BIT5, BIT6, BIT7};
 
     // Loop through all the columns
     for(col = 0; col < 4; col++) {
         // Set all columns low
-        P6OUT &= ~(BIT0 | BIT1 | BIT2 | BIT3);  // Set all columns low
+        P1OUT &= ~(BIT4 | BIT5 | BIT6 | BIT7);  // Set all columns low
         
         // Set the current column to HIGH
-        P6OUT |= (BIT0 << col);                             // Set the current column high
+        P1OUT |= col_pin[col];                             // Set the current column high
 
         // Check each row to see if any row is low (indicating a key press)
         for(row = 0; row < 4; row++) {
-            if((P5IN & (BIT0 << row)) == 0) {               // If the row is pulled low
+            if((P1IN & (row_pin[row])) != 0) {               // If the row is pulled low
+            //P1OUT &= ~(BIT4 | BIT5 | BIT6 | BIT7);  // Set all columns low
                 // Wait for key release to avoid multiple detections
-                while((P5IN & (BIT0 << row)) == 0);
+                while((P1IN & (row_pin[row])) != 0);
                 return keymap[row][col];                    // Return the key from the keymap
             }
         }
@@ -52,22 +55,22 @@ int main(void)
 {
     WDTCTL = WDTPW | WDTHOLD;               // Stop watchdog timer
     //Columns
-    P6DIR |= BIT0 | BIT1 | BIT2 | BIT3;     //set columns as outputs
-    P6OUT &= ~(BIT0 | BIT1 | BIT2 | BIT3);     //initially set all low
+    P1DIR |= BIT4 | BIT5 | BIT6 | BIT7;     //set columns as outputs
+    P1OUT &= ~(BIT4 | BIT5 | BIT6 | BIT7);     //initially set all low
     //Rows
-    P5DIR &= ~(BIT0 | BIT1 | BIT2 | BIT3);
-    P5REN |= BIT0 | BIT1 | BIT2 | BIT3;
-    P5OUT |= BIT0 | BIT1 | BIT2 | BIT3;
+    P1DIR &= ~(BIT0 | BIT1 | BIT2 | BIT3);
+    P1REN |= BIT0 | BIT1 | BIT2 | BIT3;
+    P1OUT &= ~(BIT0 | BIT1 | BIT2 | BIT3);
 
-    P1OUT &= ~BIT0;                         // Clear P1.0 output
-    P1DIR |= BIT0;                          // Set P1.0 to output direction
+    P6OUT &= ~BIT6;                         // Clear P1.0 output
+    P6DIR |= BIT6;                          // Set P1.0 to output direction
 
     PM5CTL0 &= ~LOCKLPM5;                   // Disable the GPIO power-on default high-impedance mode
 
                                             
 
     while(1){
-        P1OUT ^= BIT0;                      // Toggle P1.0 using exclusive-OR
+        P6OUT ^= BIT6;                      // Toggle P1.0 using exclusive-OR
         __delay_cycles(100000); 
                    // Delay for 100000*(1/MCLK)=0.1s
         key = scan_keypad();
