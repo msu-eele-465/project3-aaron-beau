@@ -4,6 +4,6 @@
 #include <msp430.h>
 
 // Function prototype
-void scan_keypad(void);
+void unlock_keypad(void);
 
 #endif
