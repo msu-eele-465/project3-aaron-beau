@@ -13,8 +13,13 @@ Cols : P1.4, P1.5, P1.6, P1.7
 
 //This line was added to fix git pushing
 -------------------------------------------------------------------------------------*/
-#include <msp430.h>
-char key;
+#include <msp430.h> 
+char key;                   //store individual keypad pressed
+int i;                      // loop variable
+char unlock_code[4];        // array to store keypad presses 
+char set_code[4] = {'6','9','6','9'};
+int locked = 1;
+int equal = 1;  
 // Keypad mapping
 char keymap[4][4] = {
     {'1', '2', '3', 'A'},
@@ -71,9 +76,31 @@ int main(void)
 
     while(1){
         P6OUT ^= BIT6;                      // Toggle P1.0 using exclusive-OR
-        __delay_cycles(100000); 
-                   // Delay for 100000*(1/MCLK)=0.1s
-        key = scan_keypad();
-    }
+        __delay_cycles(100000);             // delay to see flash
+                  
+         // Collecting 4-digit unlock code
+        i = 0;                                  // Reset index before input
+        while (i < 4 && locked == 1) {
+            key = scan_keypad();
+            if (key != 0) {                     // Only store valid key presses
+                unlock_code[i] = key;
+                i++;
+            }
+        }
 
+        // Check if entered code matches set_code
+        
+        for (i = 0; i < 4; i++) {
+            if (unlock_code[i] != set_code[i]) {
+                equal = 0;                      // Codes do not match
+                break;
+            }
+        }
+
+        if (equal == 1) {
+            locked = 0;                         // Unlock system
+        } else {
+            locked = 1;                         // Keep locked
+        }
+    }
 }
