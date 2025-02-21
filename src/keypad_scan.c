@@ -83,29 +83,3 @@ char unlock_keypad(void){
             locked = 1;                         // Keep system locked
         }
     }
-
-int main(void)
-{
-    WDTCTL = WDTPW | WDTHOLD;               // Stop watchdog timer
-    //Columns
-    P1DIR |= BIT4 | BIT5 | BIT6 | BIT7;     //set columns as outputs
-    P1OUT &= ~(BIT4 | BIT5 | BIT6 | BIT7);     //initially set all low
-    //Rows
-    P1DIR &= ~(BIT0 | BIT1 | BIT2 | BIT3);
-    P1REN |= BIT0 | BIT1 | BIT2 | BIT3;
-    P1OUT &= ~(BIT0 | BIT1 | BIT2 | BIT3);
-
-    P6OUT &= ~BIT6;                         // Clear P1.0 output
-    P6DIR |= BIT6;                          // Set P1.0 to output direction
-
-    PM5CTL0 &= ~LOCKLPM5;                   // Disable the GPIO power-on default high-impedance mode
-
-                                            
-
-    while(1){
-        P6OUT ^= BIT6;                      // Toggle P1.0 using exclusive-OR
-        __delay_cycles(100000);             // delay to see flash
-
-        unlock_keypad();
-    }
-}
