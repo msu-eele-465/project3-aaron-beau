@@ -36,6 +36,9 @@ int main(void)
     P6DIR |= BIT6;                          // Configure LED on P6.6
     P6OUT &= ~BIT6;
 
+
+    
+
 //------RGB LED
     P4DIR |= BIT0;                          // Configure red part
     P4OUT &= ~BIT0;
@@ -71,9 +74,19 @@ int main(void)
     P2DIR |= BIT1;                          // Configure pin 3
     P2OUT &= ~BIT1;
 
+  //Columns
+    P1DIR |= BIT4 | BIT5 | BIT6 | BIT7;     //set columns as outputs
+    P1OUT &= ~(BIT4 | BIT5 | BIT6 | BIT7);     //initially set all low
+    //Rows
+    P1DIR &= ~(BIT0 | BIT1 | BIT2 | BIT3);
+    P1REN |= BIT0 | BIT1 | BIT2 | BIT3;
+    P1OUT &= ~(BIT0 | BIT1 | BIT2 | BIT3);
+
+   
 //------------------------------------------------------------------------------
 //------------------------End Pin Initialization--------------------------------
 //------------------------------------------------------------------------------
+
 
 
     PM5CTL0 &= ~LOCKLPM5;                   // Disable GPIO high-impedance mode
