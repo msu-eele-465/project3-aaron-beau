@@ -1,6 +1,7 @@
 #include <msp430.h>
 #include "heartbeat.h"
 #include "intrinsics.h"
+#include "keypad_scan.h"
 #include "rgb_control.h"
 #include <stdint.h>
 #include "lightbar.h"
@@ -17,8 +18,7 @@ volatile int pattnum=0;                     //Specifier for the lightbar pattern
                                             //(Keypad Modifiable)
 volatile uint8_t lightbar_byte=0;           //8-bit counter for pattern 2
 int locked=1;                               //1 when locked
-int unlocking=1;                            //Boolean for unlocking
-int row=0;                                  //Int for locked state
+int patt;                                   //variable to store desired pattern
 int time_cntl=1;                            //Multiplier for base-transition 
                                             //control (default 1s)  
                                             //(Keypad Modifiable)
@@ -111,30 +111,23 @@ int main(void)
 
     __enable_interrupt();                   // Global
 
-    rgb_control(1);
-
-    P1OUT |= (BIT4 | BIT5 | BIT6 | BIT7);// Set all columns high for locked state
-
+    
 
     while (1) {
-
-    while (locked) {                        //Functionality for locked. 
-    for(row = 0; row < 4; row++) {
-            if((P1IN & (row_pin[row])) != 0) {               //checks to see if rows 
-            locked=0;                                        //are set high
-            __delay_cycles(500000);
-            }
-            }
-    }
-        while(unlocking==1){
-        unlocking=unlock_keypad();
-        }
-        rgb_control(3);
+        while(locked == 1){
+            rgb_control(1);
+            locked = unlock_keypad();
 
         }
+        while(locked == 0){
+            rgb_control(3);
+            patt = led_pattern();
+            lightbar(stepnum, patt, lightbar_byte);
+    
+        }
     }
+
 }
-
 
 //------------------------------------------------------------------------------
 //----------------------Start Timer Overflow ISR--------------------------------
