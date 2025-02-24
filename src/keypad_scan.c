@@ -86,3 +86,16 @@ int unlock_keypad(void){
         }
         return locked;
     }
+
+    int led_pattern(void){
+        char key;
+        while(key = 0){
+        key = scan_keypad();
+        if(key != 0){
+            return key;
+
+        }
+        }
+    
+
+    }
