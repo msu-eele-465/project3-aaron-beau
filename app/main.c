@@ -83,7 +83,6 @@ int main(void){
     P1REN |= BIT0 | BIT1 | BIT2 | BIT3;
     P1OUT &= ~(BIT0 | BIT1 | BIT2 | BIT3);
 
-    const char row_pin[4] = {BIT0, BIT1, BIT2, BIT3}; //For lockng function
 
 
    
