@@ -14,6 +14,7 @@ Cols : P1.4, P1.5, P1.6, P1.7
 //This line was added to fix git pushing
 -------------------------------------------------------------------------------------*/
 #include <msp430.h> 
+#include "rgb_control.h"
  
 // Keypad mapping
 char keymap[4][4] = {
@@ -51,7 +52,7 @@ char scan_keypad(void){
 
 }
 
-char unlock_keypad(void){ 
+int unlock_keypad(void){ 
     int i = 0;
     int equal = 1;
     int locked = 1;
@@ -63,6 +64,8 @@ char unlock_keypad(void){
         while (i < 4 && locked == 1) {
             key = scan_keypad();
             if (key != 0) {                     // Only store valid key presses
+            rgb_control(4);
+           // __delay_cycles(1500000);
                 unlock_code[i] = key;
                 i++;
             }
@@ -79,33 +82,38 @@ char unlock_keypad(void){
 
         if (equal == 1) {
             locked = 0;                         // Unlock system
+            
         } else {
             locked = 1;                         // Keep system locked
+            
+        }
+        return locked;
+    }
+
+    char led_pattern(void){
+       static int last_patt = 0;  // Stores the last selected pattern, initially -1
+    char key = 0;
+
+    while (key == 0) {  // Wait for a new key press
+        key = scan_keypad();
+    }
+
+    // Convert key from ASCII to integer
+    if (key >= '0' && key <= '9') {
+        last_patt = key - '0';
+    } else {
+        switch (key) {
+            case 'A': last_patt = 10; break;
+            case 'B': last_patt = 11; break;
+            case 'C': last_patt = 12; break;
+            case 'D': 
+                last_patt = -1;  // Reset pattern when locking
+                return 13;  // Immediately return 13 to signal relock
+            case '*': last_patt = 14; break;
+            case '#': last_patt = 15; break;
+            default: break;  // Ignore invalid keys
         }
     }
 
-int main(void)
-{
-    WDTCTL = WDTPW | WDTHOLD;               // Stop watchdog timer
-    //Columns
-    P1DIR |= BIT4 | BIT5 | BIT6 | BIT7;     //set columns as outputs
-    P1OUT &= ~(BIT4 | BIT5 | BIT6 | BIT7);     //initially set all low
-    //Rows
-    P1DIR &= ~(BIT0 | BIT1 | BIT2 | BIT3);
-    P1REN |= BIT0 | BIT1 | BIT2 | BIT3;
-    P1OUT &= ~(BIT0 | BIT1 | BIT2 | BIT3);
-
-    P6OUT &= ~BIT6;                         // Clear P1.0 output
-    P6DIR |= BIT6;                          // Set P1.0 to output direction
-
-    PM5CTL0 &= ~LOCKLPM5;                   // Disable the GPIO power-on default high-impedance mode
-
-                                            
-
-    while(1){
-        P6OUT ^= BIT6;                      // Toggle P1.0 using exclusive-OR
-        __delay_cycles(100000);             // delay to see flash
-
-        unlock_keypad();
+    return last_patt;
     }
-}

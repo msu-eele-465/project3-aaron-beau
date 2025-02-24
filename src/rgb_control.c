@@ -36,5 +36,6 @@ void rgb_control(int color){        //1=red, 2=green, 3=blue, 4=yellow
         P2OUT |= BIT0;
         P2OUT |= BIT2;
         P4OUT |= BIT0;
+
     }
 }
