@@ -39,7 +39,7 @@ int main(void)
 
     
 
-//------RGB LED
+//------RGB LED                             1=red, 2=green, 3=blue, 4=yellow
     P4DIR |= BIT0;                          // Configure red part
     P4OUT &= ~BIT0;
 
@@ -107,8 +107,14 @@ int main(void)
     __enable_interrupt();                   // Global
 
     while (1) {
-   locked=unlock_keypad();
-        
+
+        while(locked==1){
+        rgb_control(1);
+        locked=unlock_keypad();
+        }
+        rgb_control(4);
+
+scan_keypad();
     }
 }
 
