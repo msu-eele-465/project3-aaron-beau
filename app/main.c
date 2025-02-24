@@ -112,9 +112,11 @@ int main(void)
         rgb_control(1);
         locked=unlock_keypad();
         }
-        rgb_control(4);
+        rgb_control(3);
+        while(locked == 0){
+            led_pattern();
 
-scan_keypad();
+        }
     }
 }
 

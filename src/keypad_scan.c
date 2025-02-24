@@ -79,15 +79,18 @@ int unlock_keypad(void){
 
         if (equal == 1) {
             locked = 0;                         // Unlock system
+            rgb_control(4);
+            __delay_cycles(1500000);
         } else {
             locked = 1;                         // Keep system locked
+            
         }
         return locked;
     }
 
     int led_pattern(void){
         char key;
-        while(key = 0){
+        while(key == 0){
         key = scan_keypad();
         if(key != 0){
             return key;
