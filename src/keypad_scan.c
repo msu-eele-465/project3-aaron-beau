@@ -91,27 +91,29 @@ int unlock_keypad(void){
     }
 
     char led_pattern(void){
-       static int last_patt = 0;  // Store the last selected pattern (-1 initially)
-        char key = 0;  // Variable to hold the key press
+       static int last_patt = 0;  // Stores the last selected pattern, initially -1
+    char key = 0;
 
-    
+    while (key == 0) {  // Wait for a new key press
         key = scan_keypad();
-    
+    }
 
-    // Convert key from ASCII to an integer pattern
+    // Convert key from ASCII to integer
     if (key >= '0' && key <= '9') {
-        last_patt = key - '0';  // Convert ASCII digit ('0' to '9') to integer (0-9)
+        last_patt = key - '0';
     } else {
         switch (key) {
             case 'A': last_patt = 10; break;
             case 'B': last_patt = 11; break;
             case 'C': last_patt = 12; break;
-            case 'D': last_patt = 13; break;
+            case 'D': 
+                last_patt = -1;  // Reset pattern when locking
+                return 13;  // Immediately return 13 to signal relock
             case '*': last_patt = 14; break;
             case '#': last_patt = 15; break;
             default: break;  // Ignore invalid keys
         }
     }
 
-    return last_patt;  // Always return the last valid pattern
+    return last_patt;
     }

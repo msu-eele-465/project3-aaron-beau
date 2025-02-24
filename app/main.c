@@ -84,7 +84,7 @@ int main(void)
     P1REN |= BIT0 | BIT1 | BIT2 | BIT3;
     P1OUT &= ~(BIT0 | BIT1 | BIT2 | BIT3);
 
-    const char row_pin[4] = {BIT0, BIT1, BIT2, BIT3}; //For lockng function
+    
 
 
    
@@ -117,12 +117,18 @@ int main(void)
         while(locked == 1){
             rgb_control(1);
             locked = unlock_keypad();
+            pattnum = 0;
 
         }
         while(locked == 0){
             rgb_control(3);
             pattnum = led_pattern();
 
+        if(pattnum == 13){
+            locked = 1;
+        }else{
+            locked = 0;
+        }
             
     
         }
