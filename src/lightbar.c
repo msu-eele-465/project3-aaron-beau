@@ -3,7 +3,16 @@
 #include <stdint.h>
 
 int lightbar(int count, int patt, uint8_t value){        //function to carry through each pattern
- if (patt==1){
+ if (patt=0){
+    P2OUT &= ~BIT4;               //Light 10
+    P3OUT &= ~BIT7;              //Light 9
+    P6OUT &= ~BIT4;               //Light 8
+    P6OUT &= ~BIT3;              //Light 7
+    P6OUT &= ~BIT2;               //Light 6
+    P6OUT &= ~BIT1;              //Light 5
+    P6OUT &= ~BIT0;               //Light 4
+    P2OUT &= ~BIT1;              //Light 3
+ }else if (patt==1){
     if(count ==0){
     P2OUT |= BIT4;               //Light 10
     P3OUT &= ~BIT7;              //Light 9
