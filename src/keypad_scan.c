@@ -91,7 +91,7 @@ int unlock_keypad(void){
     }
 
     char led_pattern(void){
-       static int last_patt = 0;  // Stores the last selected pattern, initially -1
+       static int last_patt = 0;  // Stores the last selected pattern, initially 0
     char key = 0;
 
     while (key == 0) {  // Wait for a new key press
@@ -107,7 +107,7 @@ int unlock_keypad(void){
             case 'B': last_patt = 11; break;
             case 'C': last_patt = 12; break;
             case 'D': 
-                last_patt = -1;  // Reset pattern when locking
+                last_patt = 0;  // Reset pattern when locking
                 return 13;  // Immediately return 13 to signal relock
             case '*': last_patt = 14; break;
             case '#': last_patt = 15; break;
