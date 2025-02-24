@@ -13,7 +13,7 @@
 volatile int heartcnt=0;                    //heartbeat counter
 volatile int stepnum=0;                     //Counter for specifying pattern step
 volatile int barflag=0;                     //ISR flag/trigger for lightbar
-volatile int pattnum=2;                     //Specifier for the lightbar pattern
+volatile int pattnum=0;                     //Specifier for the lightbar pattern
                                             //(Keypad Modifiable)
 volatile uint8_t lightbar_byte=0;           //8-bit counter for pattern 2
 int locked=1;                               //1 when locked
