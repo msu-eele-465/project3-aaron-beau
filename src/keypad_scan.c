@@ -62,9 +62,7 @@ int unlock_keypad(void){
         i = 0;                                  // Reset index before input
         while (i < 4 && locked == 1) {
             key = scan_keypad();
-            rgb_control(1);
             if (key != 0) {                     // Only store valid key presses
-                rgb_control(4);
                 unlock_code[i] = key;
                 i++;
             }
