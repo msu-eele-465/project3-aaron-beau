@@ -118,7 +118,6 @@ int main(void)
             rgb_control(1);
             locked = unlock_keypad();
             pattnum = 0;
-
         }
         while(locked == 0){
             rgb_control(3);
