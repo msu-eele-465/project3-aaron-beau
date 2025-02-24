@@ -121,8 +121,9 @@ int main(void)
         }
         while(locked == 0){
             rgb_control(3);
-            patt = led_pattern();
-            lightbar(stepnum, patt, lightbar_byte);
+            pattnum = led_pattern();
+
+            
     
         }
     }
