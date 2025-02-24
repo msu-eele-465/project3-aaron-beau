@@ -15,6 +15,9 @@ volatile int heartcnt=0;                    //heartbeat counter
 volatile int stepnum=0;                     //Counter for specifying pattern step
 volatile int barflag=0;                     //ISR flag/trigger for lightbar
 volatile int pattnum=0;                     //Specifier for the lightbar pattern
+int pattnum1=0;
+int pattnum3=0;
+
                                             //(Keypad Modifiable)
 volatile uint8_t lightbar_byte=0;           //8-bit counter for pattern 2
 int locked=1;                               //1 when locked
@@ -117,7 +120,7 @@ int main(void)
         while(locked == 1){
             rgb_control(1);
             locked = unlock_keypad();
-            pattnum = 0;
+            pattnum = 20;
         }
         while(locked == 0){
             rgb_control(3);
@@ -191,15 +194,24 @@ if(stepnum <= 7 && pattnum != 2){       // Checking for proper pattern
 //When keypad_scan is changed to output 'locked', put this inside if(locked==0){}
 //Assuming int locked=unlock_keypad()
 
-
-    if(barflag==1){                             // If flag set call lightbar 
+    if(barflag==1 && pattnum==0){                             // If flag set call lightbar 
                                                 // Testing
-            stepnum=lightbar(stepnum, pattnum, lightbar_byte);
+            stepnum=lightbar( stepnum, pattnum, lightbar_byte);
+            barflag=0;
+    }else if(barflag==1 && pattnum==1){                             // If flag set call lightbar 
+                                                // Testing
+            pattnum1=lightbar( pattnum1, pattnum, lightbar_byte);
+            barflag=0;
+    }if(barflag==1 && pattnum==2){                             // If flag set call lightbar 
+                                                // Testing
+            stepnum=lightbar( stepnum, pattnum, lightbar_byte);
+            barflag=0;
+    }else if(barflag==1 && pattnum==3){                             // If flag set call lightbar 
+                                                // Testing
+            pattnum3=lightbar( pattnum3, pattnum, lightbar_byte);
             barflag=0;
     }
 }
-
-
     TB0CTL &= ~TBIFG;                   // Clear interrupt flag
 }
 //------------------------------------------------------------------------------
