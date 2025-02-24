@@ -6,4 +6,5 @@
 // Function prototype
 void unlock_keypad(void);
 
+void led_pattern(void);
 #endif

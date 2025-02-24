@@ -13,11 +13,13 @@
 volatile int heartcnt=0;                    //heartbeat counter
 volatile int stepnum=0;                     //Counter for specifying pattern step
 volatile int barflag=0;                     //ISR flag/trigger for lightbar
-volatile int pattnum=2;                     //Specifier for the lightbar pattern
+volatile int pattnum=0;                     //Specifier for the lightbar pattern
                                             //(Keypad Modifiable)
 volatile uint8_t lightbar_byte=0;           //8-bit counter for pattern 2
-
-int time_cntl=2;                            //Multiplier for base-transition 
+int locked=1;                               //1 when locked
+int unlocking=1;                            //Boolean for unlocking
+int row=0;                                  //Int for locked state
+int time_cntl=1;                            //Multiplier for base-transition 
                                             //control (default 1s)  
                                             //(Keypad Modifiable)
 
@@ -39,7 +41,7 @@ int main(void)
 
     
 
-//------RGB LED
+//------RGB LED                             1=red, 2=green, 3=blue, 4=yellow
     P4DIR |= BIT0;                          // Configure red part
     P4OUT &= ~BIT0;
 
@@ -82,6 +84,9 @@ int main(void)
     P1REN |= BIT0 | BIT1 | BIT2 | BIT3;
     P1OUT &= ~(BIT0 | BIT1 | BIT2 | BIT3);
 
+    const char row_pin[4] = {BIT0, BIT1, BIT2, BIT3}; //For lockng function
+
+
    
 //------------------------------------------------------------------------------
 //------------------------End Pin Initialization--------------------------------
@@ -106,15 +111,27 @@ int main(void)
 
     __enable_interrupt();                   // Global
 
-    while (1) {
-        rgb_control(4);                     // For Testing
-        
+    rgb_control(1);
 
-if(barflag==1){                             // If flag set call lightbar 
-                                            // Testing
-        stepnum=lightbar(stepnum, pattnum, lightbar_byte);
-        barflag=0;
-}
+    P1OUT |= (BIT4 | BIT5 | BIT6 | BIT7);// Set all columns high for locked state
+
+
+    while (1) {
+
+    while (locked) {                        //Functionality for locked. 
+    for(row = 0; row < 4; row++) {
+            if((P1IN & (row_pin[row])) != 0) {               //checks to see if rows 
+            locked=0;                                        //are set high
+            __delay_cycles(500000);
+            }
+            }
+    }
+        while(unlocking==1){
+        unlocking=unlock_keypad();
+        }
+        rgb_control(3);
+
+scan_keypad();
     }
 }
 
@@ -144,7 +161,7 @@ if(heartcnt < 3){                        // Frequency timer for heartbeat (1s)
 * the LED bar patterns which is triggered when barcounter is greater than 
 * time_cntl*/
 //------------------------------------------------------------------------------
-
+if(locked==0){                          // All patterns fall inside this loop
 if(barcounter<=(time_cntl)){            // Loop to control interation frequency
     barcounter++;                       // (time_cntl varies)
 }else{                                  // Once counter reaches time limit start 
@@ -170,6 +187,20 @@ if(stepnum <= 7 && pattnum != 2){       // Checking for proper pattern
     barcounter=0;
 
 }                                       // End of big else loop
+
+
+//When keypad_scan is changed to output 'locked', put this inside if(locked==0){}
+//Assuming int locked=unlock_keypad()
+
+
+    if(barflag==1){                             // If flag set call lightbar 
+                                                // Testing
+            stepnum=lightbar(stepnum, pattnum, lightbar_byte);
+            barflag=0;
+    }
+}
+
+
     TB0CTL &= ~TBIFG;                   // Clear interrupt flag
 }
 //------------------------------------------------------------------------------

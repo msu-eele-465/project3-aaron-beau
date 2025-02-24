@@ -51,7 +51,7 @@ char scan_keypad(void){
 
 }
 
-char unlock_keypad(void){ 
+int unlock_keypad(void){ 
     int i = 0;
     int equal = 1;
     int locked = 1;
@@ -82,4 +82,18 @@ char unlock_keypad(void){
         } else {
             locked = 1;                         // Keep system locked
         }
+        return locked;
+    }
+
+    int led_pattern(void){
+        char key;
+        while(key = 0){
+        key = scan_keypad();
+        if(key != 0){
+            return key;
+
+        }
+        }
+    
+
     }
