@@ -122,7 +122,9 @@ int main(void)
     for(row = 0; row < 4; row++) {
             if((P1IN & (row_pin[row])) != 0) {               //checks to see if rows 
             locked=0;                                        //are set high
-            __delay_cycles(500000);
+            __delay_cycles(500000);                          //debouncing delay
+            rgb_control(4);                                  //Set yellow:
+
             }
             }
     }
