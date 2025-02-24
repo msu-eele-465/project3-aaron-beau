@@ -51,7 +51,7 @@
                                     <listOptionValue value="${CCS_BASE_ROOT}/msp430/include"/>
                                     <listOptionValue value="${PROJECT_ROOT}"/>
                                     <listOptionValue value="${CG_TOOL_ROOT}/include"/>
-                                    <listOptionValue value="&quot;C:\Users\beauc\OneDrive\Documents\EELE_465\project3-aaron-beau\src&quot;"/>
+                                    <listOptionValue value="C:\Users\Aaron Foster\EELE-465\project3-aaron-beau\src"/>
                                 </option>
                                 <option id="com.ti.ccstudio.buildDefinitions.MSP430_21.6.compilerID.ADVICE__POWER.789372250" superClass="com.ti.ccstudio.buildDefinitions.MSP430_21.6.compilerID.ADVICE__POWER" value="all" valueType="string"/>
                             </tool>
@@ -65,6 +65,7 @@
                                     <listOptionValue value="${CCS_BASE_ROOT}/msp430/lib/FR2xx"/>
                                     <listOptionValue value="${CG_TOOL_ROOT}/lib"/>
                                     <listOptionValue value="${CG_TOOL_ROOT}/include"/>
+                                    <listOptionValue value="C:\Users\Aaron Foster\EELE-465\project3-aaron-beau\src"/>
                                 </option>
                                 <option id="com.ti.ccstudio.buildDefinitions.MSP430_21.6.linkerID.LIBRARY.1162923449" superClass="com.ti.ccstudio.buildDefinitions.MSP430_21.6.linkerID.LIBRARY" valueType="libs">
                                     <listOptionValue value="frwp_init.a"/>
