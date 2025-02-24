@@ -4,6 +4,6 @@
 #include <msp430.h>
 
 // Function prototype
-void heartbeat_init(void);
+int heartbeat_init(void);
 
 #endif
