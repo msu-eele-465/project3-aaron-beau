@@ -35,25 +35,25 @@ to return to unlocked operation.
 //-------------------Variable Initialization -----------------------------------
 /*Many of the variable are for counting, see description for each job*/
 //------------------------------------------------------------------------------
-volatile int heartcnt=0;                    //heartbeat counter
-volatile int stepnum=0;                     //Counter for specifying pattern step
-volatile int barflag=0;                     //ISR flag/trigger for lightbar
-volatile int pattnum=0;                     //Specifier for the lightbar pattern
+volatile int heartcnt=0;                    // Heartbeat counter
+volatile int stepnum=0;                     // Counter for pattern step
+volatile int barflag=0;                     // ISR flag/trigger for lightbar
+volatile int pattnum=0;                     // Specifier for lightbar pattern
 
-int pattnum1=0;                             //Specific step number variable
-int pattnum3=0;                             //Both for memory
+int pattnum1=0;                             // Specific step number variable
+int pattnum3=0;                             // Both for memory
 int temp;
 int initial_state = 1;
-                                            //(Keypad Modifiable)
-volatile uint8_t lightbar_byte=0;           //8-bit counter for pattern 2
-int locked=1;                               //1 when locked
-int patt;                                   //variable to store desired pattern
-int time_cntl=0;                            //Multiplier for base-transition 
-                                            //control (default 1s)  
-                                            //(Keypad Modifiable)
-int base_time;                              //Base time specifier
-int barcounter=0;                           //Step counter for ISR, compared to 
-                                            //time_cntl for base-transition
+                                            // (Keypad Modifiable)
+volatile uint8_t lightbar_byte=0;           // 8-bit counter for pattern 2
+int locked=1;                               // 1 when locked
+int patt;                                   // Variable to store desired pattern
+int time_cntl=0;                            // Multiplier for base-transition 
+                                            // Control (default 1s)  
+                                            // (Keypad Modifiable)
+int base_time;                              // Base time specifier
+int barcounter=0;                           // Step counter for ISR, compared to 
+                                            // Time_cntl for base-transition
 
 int main(void)
 {
@@ -165,14 +165,14 @@ int main(void)
            if(initial_state == 1){
              rgb_control(3);}              // Set LED blue
 
-            pattnum = led_pattern();       //  Call read fn
+            pattnum = led_pattern();       // Call read fn
             switch(pattnum){               // Check for 'A' or 'B'
                                            // Inc if A, Dec if B
                 case 10:
                     time_cntl++;
                     pattnum=temp;
                     break;
-                case 11:               //vvv Fail safe for no overflow
+                case 11:                   //vvv Fail safe for no overflow
                     if((base_time+time_cntl)==1){
                         pattnum=temp;
                         break;
