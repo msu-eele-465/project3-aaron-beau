@@ -106,8 +106,8 @@ int main(void)
     P2OUT &= ~BIT1;
 
   //Columns
-    P1DIR |= BIT4 | BIT5 | BIT6 | BIT7;     //set columns as outputs
-    P1OUT &= ~(BIT4 | BIT5 | BIT6 | BIT7);     //initially set all low
+    P1DIR |= BIT4 | BIT5 | BIT6 | BIT7;     // Set columns as outputs
+    P1OUT &= ~(BIT4 | BIT5 | BIT6 | BIT7);  // Initially set all low
     //Rows
     P1DIR &= ~(BIT0 | BIT1 | BIT2 | BIT3);
     P1REN |= BIT0 | BIT1 | BIT2 | BIT3;
@@ -126,10 +126,10 @@ int main(void)
     PM5CTL0 &= ~LOCKLPM5;                   // Disable GPIO high-impedance mode
 
 
-//------Setup 0.25s Timer B0 (for heartbeat 1s)
+//------Setup 0.25s Timer B0 (for heartbeat and patterns)
     TB0CTL |= TBCLR;                        // Clear timer
     TB0CTL |= TBSSEL__SMCLK;                // Select SMCLK (1 MHz)
-    TB0CTL |= MC__UP;               // Set mode to continuous
+    TB0CTL |= MC__UP;                       // Set mode to up
     TB0CTL |= ID__4;                        
     TB0CCR0 = 65500;                        // Set overflow to 0.25s
 
@@ -145,14 +145,14 @@ int main(void)
 
     while (1) {
         while(locked == 1){
-            P2OUT &= ~BIT4;                //Light 10
-            P3OUT &= ~BIT7;                //Light 9
-            P6OUT &= ~BIT4;                //Light 8
-            P6OUT &= ~BIT3;                //Light 7
-            P6OUT &= ~BIT2;                //Light 6
-            P6OUT &= ~BIT1;                //Light 5
-            P6OUT &= ~BIT0;                //Light 4
-            P2OUT &= ~BIT1;                //Light 3
+            P2OUT &= ~BIT4;                // Light 10
+            P3OUT &= ~BIT7;                // Light 9
+            P6OUT &= ~BIT4;                // Light 8
+            P6OUT &= ~BIT3;                // Light 7
+            P6OUT &= ~BIT2;                // Light 6
+            P6OUT &= ~BIT1;                // Light 5
+            P6OUT &= ~BIT0;                // Light 4
+            P2OUT &= ~BIT1;                // Light 3
             rgb_control(1);
             locked = unlock_keypad();
             pattnum = 20;
@@ -161,13 +161,13 @@ int main(void)
 //------------------------------------------------------------------------------
 //-------------------------unlocked Section-------------------------------------
 
-        while(locked == 0){               //While system unlocked
+        while(locked == 0){                // While system unlocked
            if(initial_state == 1){
-             rgb_control(3);}               //Set LED blue
+             rgb_control(3);}              // Set LED blue
 
-            pattnum = led_pattern();      //Call read fn
-            switch(pattnum){              //Check for 'A' or 'B'
-                                          //Inc if A, Dec if B
+            pattnum = led_pattern();       //  Call read fn
+            switch(pattnum){               // Check for 'A' or 'B'
+                                           // Inc if A, Dec if B
                 case 10:
                     time_cntl++;
                     pattnum=temp;
@@ -182,11 +182,11 @@ int main(void)
                     break;
                     }
             }
-        if(pattnum == 13){            //D has been pressed, lock system
+        if(pattnum == 13){                 // If D has been pressed, lock system
             locked = 1;
             initial_state = 1;
         }else{
-            locked = 0;             // system is still unlocked
+            locked = 0;                    // System is still unlocked
             initial_state = 0;
         }
 
@@ -242,7 +242,7 @@ if(stepnum <= 7 && pattnum != 2){       // Checking for proper pattern
     barflag=1;                          // binary counter
         if (lightbar_byte>255){         // When all bits toggled reset to zeroes
             lightbar_byte=0;
-        }else{                          //Else increment byte by 1
+        }else{                          // Else increment byte by 1
             lightbar_byte++;
         }
     }
@@ -264,13 +264,13 @@ if(stepnum <= 7 && pattnum != 2){       // Checking for proper pattern
             barflag=0;
             base_time=3;
             temp=pattnum;
-    }else if(barflag==1 && pattnum==2){     // If flag set call lightbar 
+    }else if(barflag==1 && pattnum==2){ // If flag set call lightbar 
             stepnum=lightbar( stepnum, pattnum, lightbar_byte);
             rgb_control(2);
             barflag=0;
             base_time=1;
             temp=pattnum;
-    }else if(barflag==1 && pattnum==3){// If flag set call lightbar 
+    }else if(barflag==1 && pattnum==3){ // If flag set call lightbar 
             pattnum3=lightbar( pattnum3, pattnum, lightbar_byte);
             rgb_control(7);
             barflag=0;
