@@ -1,0 +1,53 @@
+lock/unlock:
+
+while(locked){
+	pattern LEDs off
+	rgb=red
+	call led_pattern()	//Which also calls read keypad
+}
+
+while(!locked){
+rgb=blue;
+	call read keypad
+	switch(case) //For A or B
+	
+	if(read = 'D'){
+		Lock keypad
+	}
+}
+
+
+
+pattern iteration speed:
+
+Switch(case){
+
+	case 'A': 
+	increment speed by 0.25s
+	case 'B':
+	decrement speed by 0.25s
+}
+
+Overflow ISR{
+
+	toggle heartbeat every 2 overflows
+
+	set pattern flag to 1 every base_time + inc/dec
+
+	if(pattern=1){
+	do pattern
+	custom LED color
+	}else if(pattern=2){
+	do other pattern
+	custom LED color
+	}else if(pattern=2){
+	do other pattern
+	custom LED color
+	}else if(pattern=2){
+	do other pattern
+	custom LED color
+	}
+clear ISR flag
+}
+
+
