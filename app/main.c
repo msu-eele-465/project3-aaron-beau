@@ -107,7 +107,7 @@ int main(void)
     TB0CTL |= TBSSEL__SMCLK;                // Select SMCLK (1 MHz)
     TB0CTL |= MC__UP;               // Set mode to continuous
     TB0CTL |= ID__4;                        
-    TB0CCR0 = 64472;                        // Set overflow to 0.25s
+    TB0CCR0 = 65500;                        // Set overflow to 0.25s
 
 
     TB0CTL |= TBIE;                         // Enable Timer Overflow Interrupt
@@ -116,7 +116,8 @@ int main(void)
 
     __enable_interrupt();                   // Global
 
-    
+//------------------------------------------------------------------------------    
+//---------------------------Locked Section-------------------------------------
 
     while (1) {
         while(locked == 1){
@@ -133,6 +134,9 @@ int main(void)
             pattnum = 20;
             temp=1;
         }
+//------------------------------------------------------------------------------
+//-------------------------unlocked Section-------------------------------------
+
         while(locked == 0){               //While system unlocked
             rgb_control(3);               //Set LED blue
 
@@ -158,11 +162,9 @@ int main(void)
         }else{
             locked = 0;
         }
-            
-    
-        }
-    }
 
+                        }
+             }    
 }
 
 //------------------------------------------------------------------------------
@@ -170,7 +172,8 @@ int main(void)
 //------------------------------------------------------------------------------
 /*This ISR implements a basic 0.25s overflow loop for toggling heartbeat 
 * LED and the various LED bar patterns which can be scaled depending on
-* inputs from the keypad*/
+* inputs from the keypad.Basic toggle functons are called in the ISR and the 
+* keypad reading is done in while(locked==0)*/
 //------------------------------------------------------------------------------
 #pragma vector = TIMER0_B1_VECTOR
 __interrupt void ISR_TB0_OVERFLOW(void)
@@ -188,7 +191,8 @@ if(heartcnt < 3){                        // Frequency timer for heartbeat (1s)
 /*Code counts every time ISR is called and sets flag to toggle lightbar() every 
 * time_cntl times(base 1s) The else loop in this section contains every case for
 * the LED bar patterns which is triggered when barcounter is greater than 
-* time_cntl*/
+* time_cntl. This section also implements the counter that allows base time to
+*  be increased*/
 //------------------------------------------------------------------------------
 if(locked==0){                          // All patterns fall inside this loop
 if(barcounter<(base_time+time_cntl)){   // Loop to control interation frequency
@@ -203,7 +207,9 @@ if(stepnum <= 7 && pattnum != 2){       // Checking for proper pattern
 //-------------------End  Lightbar flag call------------------------------------
 //-------------------Start pattern caller --------------------------------------
 /*Section is still nestled in else loop ^^^ this logic is separate in order to
-* properly call and pass in byte of data to lightbar()*/
+* properly call and pass in byte of data to lightbar() Each pattern has its own 
+* if statement so the base time can be initialized and the pattern number can be 
+* saved in temp to properly account for 'A' or 'B' inputs later */
 //------------------------------------------------------------------------------
     if(pattnum == 2){                   // Individual logic to check for 
     barflag=1;                          // binary counter
@@ -229,7 +235,7 @@ if(stepnum <= 7 && pattnum != 2){       // Checking for proper pattern
             barflag=0;
             base_time=3;
             temp=pattnum;
-    }if(barflag==1 && pattnum==2){     // If flag set call lightbar 
+    }else if(barflag==1 && pattnum==2){     // If flag set call lightbar 
             stepnum=lightbar( stepnum, pattnum, lightbar_byte);
             barflag=0;
             base_time=1;
