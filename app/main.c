@@ -15,14 +15,19 @@ volatile int heartcnt=0;                    //heartbeat counter
 volatile int stepnum=0;                     //Counter for specifying pattern step
 volatile int barflag=0;                     //ISR flag/trigger for lightbar
 volatile int pattnum=0;                     //Specifier for the lightbar pattern
+
+int pattnum1=0;                             //Specific step number variable
+int pattnum3=0;                             //Both for memory
+int temp;
+
                                             //(Keypad Modifiable)
 volatile uint8_t lightbar_byte=0;           //8-bit counter for pattern 2
 int locked=1;                               //1 when locked
 int patt;                                   //variable to store desired pattern
-int time_cntl=1;                            //Multiplier for base-transition 
+int time_cntl=0;                            //Multiplier for base-transition 
                                             //control (default 1s)  
                                             //(Keypad Modifiable)
-
+int base_time;                              //Base time specifier
 int barcounter=0;                           //Step counter for ISR, compared to 
                                             //time_cntl for base-transition
 
@@ -100,9 +105,9 @@ int main(void)
 //------Setup 0.25s Timer B0 (for heartbeat 1s)
     TB0CTL |= TBCLR;                        // Clear timer
     TB0CTL |= TBSSEL__SMCLK;                // Select SMCLK (1 MHz)
-    TB0CTL |= MC__CONTINUOUS;               // Set mode to continuous
+    TB0CTL |= MC__UP;               // Set mode to continuous
     TB0CTL |= ID__4;                        
-    TB0CCR0 = 62500;                        // Set overflow to 0.25s
+    TB0CCR0 = 64472;                        // Set overflow to 0.25s
 
 
     TB0CTL |= TBIE;                         // Enable Timer Overflow Interrupt
@@ -115,15 +120,40 @@ int main(void)
 
     while (1) {
         while(locked == 1){
+            P2OUT &= ~BIT4;                //Light 10
+            P3OUT &= ~BIT7;                //Light 9
+            P6OUT &= ~BIT4;                //Light 8
+            P6OUT &= ~BIT3;                //Light 7
+            P6OUT &= ~BIT2;                //Light 6
+            P6OUT &= ~BIT1;                //Light 5
+            P6OUT &= ~BIT0;                //Light 4
+            P2OUT &= ~BIT1;                //Light 3
             rgb_control(1);
             locked = unlock_keypad();
-            pattnum = 0;
+            pattnum = 20;
+            temp=1;
         }
-        while(locked == 0){
-            rgb_control(3);
-            pattnum = led_pattern();
+        while(locked == 0){               //While system unlocked
+            rgb_control(3);               //Set LED blue
 
-        if(pattnum == 13){
+            pattnum = led_pattern();      //Call read fn
+            switch(pattnum){              //Check for 'A' or 'B'
+                                          //Inc if A, Dec if B
+                case 10:
+                    time_cntl++;
+                    pattnum=temp;
+                    break;
+                case 11:               //vvv Fail safe for no overflow
+                    if((base_time+time_cntl)==1){
+                        pattnum=temp;
+                        break;
+                    }else{
+                    time_cntl=time_cntl-1;
+                    pattnum=temp;
+                    break;
+                    }
+            }
+        if(pattnum == 13){            //Locking again
             locked = 1;
         }else{
             locked = 0;
@@ -161,7 +191,7 @@ if(heartcnt < 3){                        // Frequency timer for heartbeat (1s)
 * time_cntl*/
 //------------------------------------------------------------------------------
 if(locked==0){                          // All patterns fall inside this loop
-if(barcounter<=(time_cntl)){            // Loop to control interation frequency
+if(barcounter<(base_time+time_cntl)){   // Loop to control interation frequency
     barcounter++;                       // (time_cntl varies)
 }else{                                  // Once counter reaches time limit start 
 if(stepnum <= 7 && pattnum != 2){       // Checking for proper pattern
@@ -171,7 +201,7 @@ if(stepnum <= 7 && pattnum != 2){       // Checking for proper pattern
         stepnum=0;
     }
 //-------------------End  Lightbar flag call------------------------------------
-//-------------------Start binary counter --------------------------------------
+//-------------------Start pattern caller --------------------------------------
 /*Section is still nestled in else loop ^^^ this logic is separate in order to
 * properly call and pass in byte of data to lightbar()*/
 //------------------------------------------------------------------------------
@@ -187,18 +217,31 @@ if(stepnum <= 7 && pattnum != 2){       // Checking for proper pattern
 
 }                                       // End of big else loop
 
-
 //When keypad_scan is changed to output 'locked', put this inside if(locked==0){}
 //Assuming int locked=unlock_keypad()
-
-
-    if(barflag==1){                             // If flag set call lightbar 
-                                                // Testing
-            stepnum=lightbar(stepnum, pattnum, lightbar_byte);
+    if(barflag==1 && pattnum==0){       // If flag set call lightbar 
+            stepnum=lightbar( stepnum, pattnum, lightbar_byte);
             barflag=0;
+            base_time=1;
+            temp=pattnum;
+    }else if(barflag==1 && pattnum==1){ // If flag set call lightbar 
+            pattnum1=lightbar( pattnum1, pattnum, lightbar_byte);
+            barflag=0;
+            base_time=3;
+            temp=pattnum;
+    }if(barflag==1 && pattnum==2){     // If flag set call lightbar 
+            stepnum=lightbar( stepnum, pattnum, lightbar_byte);
+            barflag=0;
+            base_time=1;
+            temp=pattnum;
+    }else if(barflag==1 && pattnum==3){// If flag set call lightbar 
+            pattnum3=lightbar( pattnum3, pattnum, lightbar_byte);
+            barflag=0;
+            base_time=1;
+            temp=pattnum;
     }
-}
 
+}
 
     TB0CTL &= ~TBIFG;                   // Clear interrupt flag
 }
