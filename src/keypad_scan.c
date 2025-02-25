@@ -1,10 +1,31 @@
 /*----------------------------------------------------------------------------------
 Beau Coburn & Aaron Foster
 EELE 465
-2/20/25
+2/25/25
 Project 3: Keypad LED Pattersn
-Description:  In the below code, the logic for analyzing which key has been pressed
-on the keypad is defined.
+Description:  
+
+scan_keypad
+    This function scans the input of the key pad by setting the rows as inputs and the columns as outputs.
+    The first column is set high and all the rows are checked to see if both the row and column are high corresponding
+    to a key press.  If no key is detected on the first column, the logic will continue and the next row set high
+    till a key press is detected.  A value will only be returned if a key is pressed and will only be sent when the
+    key is released.  
+
+unlock_keypad
+    The above keypad logic is used to read in four digits from the keypad.  With those digits loaded into an array
+    they are compared to the set code.  If the entered code mathech the set code the locked flag will be set zero and 
+    returned to the main C file to unlock the sytem.  If the code entered is incorrect the system will stay locked.
+    while the 4 entered values are being loaded into the array the RGB LED is set to yellow to denote that the
+    system is attempting to be unlocked.
+
+led_pattern
+    The scan_keypad logic is used to scan in a single digit input from the keypad.  When a key is pressed
+    it will be returned to the main code which will use it to set the desired LED pattern on the off board
+    LED bar display.  This functionality is also used to return the input (A or B) which changes the speed
+    at which the LED pattern is displayed.  Additionaly, this is used to detect when D is pressed to reset the sytem.
+    Logic was used to decode the ascii character to a decimal value so that the desired value was valid within the LED
+    pattern module
 
 Pin Out
 --------------

@@ -1,3 +1,11 @@
+/*
+This module contains all of the pattern information that is driven to the off board LED bar display.
+An integer denoting which pattern is desired is passed into the function and will then be driven 
+through the timer ISR within the main loop of the system.  A count flag is implemented so that when a 
+pattern is changed it can return to the place where it was before the pattern was changed.  All ports are
+directly driven to the off board LED bar display
+*/
+
 #include "lightbar.h"
 #include "intrinsics.h"
 #include <stdint.h>

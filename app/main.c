@@ -1,3 +1,27 @@
+/*
+Beau Coburn & Aaron Foster
+EELE 465
+2/25/25
+Project 3: Keypad and LED Patterns
+Description:
+In this project, a system was created that can be locked and unlocked based on the inputs form
+a 4x4 keypad connected to the MSP430.  The system begins in a locked state with an RGB LED set to red
+to indicate the system is locked.  To unlock a code is required to be entered which was set as 6969. While a code 
+is being entered, regardless if it is correct, the RGB changes to yellow to denote that the system is attempting to
+unlock.  If the code is wrong the system will stay locked and the RGB LED will return to red.  If the code is 
+correct, the system will unlock and the RBG LED will change to blue to denote that the system is ready to take
+a single digit input from the keypad to drive a pattern on the 8 segment LED bar display.  When the input from the
+keypad is a 0,1,2, or 3 a specific LED pattern will begin to be displayed on the LED bar.  The speed at which the 
+pattern is displayed is driven by a timer ISR within the main code.  The speed that the LED bar opperates can be changed
+by pressing A to slow down the speed or B to increase the speed.  Each press will change the speed by 0.25 seconds
+accordinly.  Each pattern has its own RGB LED color to further denote that the pattern has changed.  At any time, the 
+system can be reset and locked again by pressing the D charachter on the keypad.  Once this is complete the system 
+will return to its locked state with the RGB LED being red and will require the correct passcode to be entered once more
+to return to unlocked operation.
+
+*/
+
+
 #include <msp430.h>
 #include "heartbeat.h"
 #include "intrinsics.h"
@@ -158,11 +182,11 @@ int main(void)
                     break;
                     }
             }
-        if(pattnum == 13){            //Locking again
+        if(pattnum == 13){            //D has been pressed, lock system
             locked = 1;
             initial_state = 1;
         }else{
-            locked = 0;
+            locked = 0;             // system is still unlocked
             initial_state = 0;
         }
 

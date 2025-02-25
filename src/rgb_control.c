@@ -1,3 +1,9 @@
+/*
+This module contains all of the colors used to distinguish between locked, unlocking, unlocked,
+and the various states of the LED.  A simple integer needs to be passed into the function for a color
+to be selected and driven to the off board RGB LED
+*/
+
 #include "rgb_control.h"
 #include "intrinsics.h"
 
