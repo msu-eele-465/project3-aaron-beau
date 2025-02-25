@@ -1,3 +1,7 @@
+/*
+This file simply toggles the onboard green LED to show that the program is still in operation.
+*/
+
 #include "heartbeat.h"
 
 // Function to toggle LED (called from ISR in main.c)
