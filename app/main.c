@@ -19,7 +19,7 @@ volatile int pattnum=0;                     //Specifier for the lightbar pattern
 int pattnum1=0;                             //Specific step number variable
 int pattnum3=0;                             //Both for memory
 int temp;
-
+int initial_state = 1;
                                             //(Keypad Modifiable)
 volatile uint8_t lightbar_byte=0;           //8-bit counter for pattern 2
 int locked=1;                               //1 when locked
@@ -134,7 +134,8 @@ int main(void)
             temp=1;
         }
         while(locked == 0){               //While system unlocked
-            rgb_control(3);               //Set LED blue
+           if(initial_state == 1){
+             rgb_control(3);}               //Set LED blue
 
             pattnum = led_pattern();      //Call read fn
             switch(pattnum){              //Check for 'A' or 'B'
@@ -155,8 +156,10 @@ int main(void)
             }
         if(pattnum == 13){            //Locking again
             locked = 1;
+            initial_state = 1;
         }else{
             locked = 0;
+            initial_state = 0;
         }
             
     
@@ -221,21 +224,25 @@ if(stepnum <= 7 && pattnum != 2){       // Checking for proper pattern
 //Assuming int locked=unlock_keypad()
     if(barflag==1 && pattnum==0){       // If flag set call lightbar 
             stepnum=lightbar( stepnum, pattnum, lightbar_byte);
+            rgb_control(6);
             barflag=0;
             base_time=1;
             temp=pattnum;
     }else if(barflag==1 && pattnum==1){ // If flag set call lightbar 
             pattnum1=lightbar( pattnum1, pattnum, lightbar_byte);
+            rgb_control(5);
             barflag=0;
             base_time=3;
             temp=pattnum;
     }if(barflag==1 && pattnum==2){     // If flag set call lightbar 
             stepnum=lightbar( stepnum, pattnum, lightbar_byte);
+            rgb_control(2);
             barflag=0;
             base_time=1;
             temp=pattnum;
     }else if(barflag==1 && pattnum==3){// If flag set call lightbar 
             pattnum3=lightbar( pattnum3, pattnum, lightbar_byte);
+            rgb_control(7);
             barflag=0;
             base_time=1;
             temp=pattnum;
