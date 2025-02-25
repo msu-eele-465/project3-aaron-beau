@@ -40,10 +40,10 @@ Overflow ISR{
 	}else if(pattern=2){
 	do other pattern
 	custom LED color
-	}else if(pattern=2){
+	}else if(pattern=3){
 	do other pattern
 	custom LED color
-	}else if(pattern=2){
+	}else if(pattern=4){
 	do other pattern
 	custom LED color
 	}
