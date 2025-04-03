@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>app</name>
+	<name>keypad_test</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -17,11 +17,4 @@
 		<nature>org.eclipse.cdt.managedbuilder.core.managedBuildNature</nature>
 		<nature>org.eclipse.cdt.core.ccnature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>src</name>
-			<type>2</type>
-			<location>C:/Users/beauc/OneDrive/Documents/EELE_465/project3-aaron-beau/src</location>
-		</link>
-	</linkedResources>
 </projectDescription>

@@ -1,0 +1,10 @@
+Unlocking Feature For Keypad
+
+- Create locked and unlocked flag;
+- Place all code to be executed while unlocked within if statement
+- Constantly scanning keypad for unlock code
+- RGB LED will be set to red while locked flag set;
+- When code is entered correctly, set RGB to yellow to denote unlocking 
+- Small delay to keep yellow on for about 1 second
+- Enter code containing LED patterns
+- Set RGB to blue to denote unlocked
